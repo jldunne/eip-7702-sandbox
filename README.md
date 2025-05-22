@@ -5,22 +5,17 @@ This repository provides a simulation environment to test EIP-7702 transaction b
 ##  Prerequisites
 
 Ensure you have the following installed:
-1.  **Docker:** ([docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)) - Verify with `docker --version`.
-2.  **Kurtosis CLI:** ([docs.kurtosis.com/install](https://docs.kurtosis.com/install)) - Verify with `kurtosis version`.
-3.  **Node.js & npm:** (Version 18.x or 20.x recommended) ([nodejs.org](https://nodejs.org/)) - Verify with `node -v` and `npm -v`.
-4.  **solcjs:** (Solidity Compiler for JavaScript, e.g., version 0.8.20 for included contracts)
-    ```bash
+
+- **Docker:** ([docs.docker.com/get-docker/](https://docs.docker.com/get-docker/))
+- **Kurtosis CLI:** ([docs.kurtosis.com/install](https://docs.kurtosis.com/install))
+- **Node.js & npm:** (Version 18.x or 20.x recommended) ([nodejs.org](https://nodejs.org/))
+- **solcjs:** (Solidity Compiler for JavaScript, e.g., version 0.8.20 for included contracts)
+
+  ```bash
     npm install -g solc@0.8.20
     ```
     Verify with `solcjs --version`.
 
-## Setup Instructions
-
-**1. Clone Repository:**
-   ```bash
-      git clone <your-repo-url>
-      cd eip-7702-sandbox
-   ```
 ## Configure Testnet & Accounts:
 This project uses template files for your specific parameters. You will need to copy these templates and fill in your details. Ensure the actual configuration files (network_params.yaml, accounts.json, .env) are added to your .gitignore.
 

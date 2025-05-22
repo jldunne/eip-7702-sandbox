@@ -1,0 +1,32 @@
+participants:
+  - el_type: geth
+    el_image: ""
+    cl_type: lighthouse
+    cl_image: ""
+    count: 2
+    validator_count: 64
+
+network_params:
+  network: "kurtosis"
+  network_id: "1337702" 
+  genesis_gaslimit: 30000000
+  preregistered_validator_count: 64
+  num_validator_keys_per_node: 64
+  altair_fork_epoch: 0
+  bellatrix_fork_epoch: 0
+  capella_fork_epoch: 0  
+  deneb_fork_epoch: 0   
+  electra_fork_epoch: 0
+  deposit_contract_address: "0x00000000219ab540356cBB839Cbe05303d7705Fa"
+  num_validator_keys_per_node: 8
+  preregistered_validator_keys_mnemonic: "ENTER_YOUR_NEW_24_WORD_TEST_MNEMONIC_PHRASE_HERE"
+  seconds_per_slot: 12
+  genesis_delay: 20
+  prefunded_accounts: '{
+    "YOUR_TEST_ACCOUNT_ADDRESS_1_WITH_0X_PREFIX_HERE": {"balance": "1000000000000000000000"},
+    "YOUR_SEALER_TEST_ACCOUNT_ADDRESS_2_WITH_0X_PREFIX_HERE": {"balance": "500000000000000000000"}
+  }'
+
+global_log_level: "info"
+wait_for_finalization: false
+additional_services: []

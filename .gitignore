@@ -1,0 +1,47 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Kurtosis
+kurtosis-enclave-data*/
+*.kurtosis/
+
+build/
+dist/
+
+.env
+accounts.json
+
+# Logs
+*.log
+logs
+*.logs
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# --- Ethereum Local Testnet ---
+kurtosis-config/network_params.yaml
+
+# Keystore files for sealer/test accounts (if stored in project)
+# If you store keystores in a specific directory, e.g., "my_keystores/"
+# you can add that directory: /my_keystores/
+*.keystore
+UTC--*
+
+# Raw private keys (strongly discouraged for anything but throwaway local dev)
+*.pk
+privatekey.txt
+private_key.txt
+sealer_private_key.txt
+test_account_private_key.txt
+
+# Kurtosis specific files (if applicable)
+kurtosis.log
+kurtosis-*.log
+kurtosis-enclave-data*/
+*.kurtosis/

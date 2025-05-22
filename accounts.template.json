@@ -1,0 +1,11 @@
+[
+  {
+    "name": "authority001",
+    "privateKey": "0x_ENTER_PRIVATE_KEY_1_HERE"
+  },
+  {
+    "name": "authority002",
+    "privateKey": "0x_ENTER_PRIVATE_KEY_2_HERE"
+  }
+  // add as many as you like
+]

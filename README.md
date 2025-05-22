@@ -26,15 +26,15 @@ This project uses template files for your specific parameters. You will need to 
 Copy `kurtosis-config/network_params.template.yaml` to `kurtosis-config/network_params.yaml`.
 
 Edit network_params.yaml and set:
-   - Your desired network_id (Chain ID).
-   - A 24-word test preregistered_validator_keys_mnemonic.
-   - Update prefunded_accounts (as a JSON string) to include all EOA addresses you will use (main sender from .env and all delegating accounts from accounts.json), along with their initial test ETH balances in Wei.
+   - Your desired network_id
+   - A 24-word test preregistered_validator_keys_mnemonic
+   - Update prefunded_accounts (as a JSON string) to include all EOA addresses you will use (main sender from .env and all delegating accounts from accounts.json), along with their initial test ETH balances in wei
 
 ## Delegating Accounts (accounts.json):
 
-These are the EOAs whose code will be set by EIP-7702 in the simulation. Copy accounts.template.json to accounts.json in the project root.
+These are the EOAs whose code will be set by EIP-7702 in the simulation. Copy `accounts.template.json` to `accounts.json` in the project root.
 
-Populate accounts.json with new, test-only private keys for each delegating account.
+Populate `accounts.json` with new, test-only private keys for each delegating account.
 
 ```
 [
@@ -45,7 +45,7 @@ Populate accounts.json with new, test-only private keys for each delegating acco
 
 ## Environment Variables (.env):
 
-Create a .env file in the project root.
+Create a `.env` file in the project root.
 Add the following, replacing placeholder values:
 
 ```
@@ -99,7 +99,7 @@ node transaction-simulator/simulate.js
 
 The simulate.js script (when respective flags are enabled in .env) runs scenarios to test:
 
-Stale Authorization Nonces: How an EOA's authorization fails if its nonce is outdated.
-State-Based Call Invalidations: How concurrent actions on a delegated EOA can alter expected transaction outcomes.
-Delegated Code Nonce Consumption: How delegated code performing actions like contract creation consumes the EOA's nonce, potentially invalidating its other pending transactions.
-Mixed Load: A general simulation of mixed EIP-7702 and normal transactions.
+- Stale Authorization Nonces: How an EOA's authorization fails if its nonce is outdated.
+- State-Based Call Invalidations: How concurrent actions on a delegated EOA can alter expected transaction outcomes.
+- Delegated Code Nonce Consumption: How delegated code performing actions like contract creation consumes the EOA's nonce, potentially invalidating its other pending transactions.
+- Mixed Load: A general simulation of mixed EIP-7702 and normal transactions.

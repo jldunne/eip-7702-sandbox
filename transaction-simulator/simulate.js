@@ -117,18 +117,16 @@ async function createAuthorizationTuple(delegatingAccountWallet, targetCodeAddre
     const tupleNonce = accountNonce === 0 ? "0x" : ethers.toBeHex(accountNonce);
     const tupleYParity = signature.yParity === 0 ? "0x" : ethers.toBeHex(signature.yParity);
 
-    // VVVVV CHANGE THESE TWO LINES VVVVV
-    const tupleR = ethers.toBeHex(ethers.toBigInt(signature.r)); // Convert to BigInt then to minimal hex
-    const tupleS = ethers.toBeHex(ethers.toBigInt(signature.s)); // Convert to BigInt then to minimal hex
-    // ^^^^^ CHANGE THESE TWO LINES ^^^^^
+    const tupleR = ethers.toBeHex(ethers.toBigInt(signature.r));
+    const tupleS = ethers.toBeHex(ethers.toBigInt(signature.s));
 
     return [
         tupleChainId,
         targetCodeAddress,
         tupleNonce,
         tupleYParity,
-        tupleR, // Use the new variables
-        tupleS  // Use the new variables
+        tupleR, 
+        tupleS
     ];
 }
 
@@ -136,8 +134,8 @@ async function sendEip7702SetCodeTransaction(sponsorWallet, targetEOAtoCallAfter
     const senderNonce = await sponsorWallet.getNonce();
     const feeData = await provider.getFeeData();
     const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas || ethers.parseUnits("1", "gwei");
-    const maxFeePerGas = feeData.maxFeePerGas || ethers.parseUnits("50", "gwei"); // Increased default maxFee
-    const gasLimit = ethers.toBigInt(1000000 + (authorizationListForTx.length * 300000)); // Increased base and per-auth buffer
+    const maxFeePerGas = feeData.maxFeePerGas || ethers.parseUnits("50", "gwei"); 
+    const gasLimit = ethers.toBigInt(1000000 + (authorizationListForTx.length * 300000)); 
 
     const unsignedTxPayloadFields = [
         ethers.toBeHex(currentChainId), ethers.toBeHex(senderNonce),
@@ -175,7 +173,6 @@ async function testStaleAuthorizationNonceScenario(sponsorWallet, availableDeleg
         console.log("   Skipping: Needs at least 1 delegating account and 1 authorizable contract."); return;
     }
     
-    // Prefer a fresh account if possible, or be aware of existing nonce
     const targetDelegatingWallet = getRandomElement(availableDelegatingWallets); 
     const targetCodeForStaleAuth = getRandomElement(authorizableContractInstances).target;
     const initialNonce = await provider.getTransactionCount(targetDelegatingWallet.address);
@@ -187,7 +184,6 @@ async function testStaleAuthorizationNonceScenario(sponsorWallet, availableDeleg
     console.log(`   Forcing nonce increment for ${targetDelegatingWallet.address} by sending a tx to ZeroAddress...`);
     stats.totalNormalTxAttempts++;
     try {
-        // VVVVV MODIFIED NONCE BUMP TRANSACTION VVVVV
         const bumpNonceTx = await targetDelegatingWallet.sendTransaction({ 
             to: ethers.ZeroAddress, // Send to ZeroAddress or another clean EOA
             value: ethers.parseUnits("0.000000000000000001", "ether"), // 1 wei
@@ -195,7 +191,6 @@ async function testStaleAuthorizationNonceScenario(sponsorWallet, availableDeleg
             maxFeePerGas: ethers.parseUnits("20", "gwei"), 
             maxPriorityFeePerGas: ethers.parseUnits("1", "gwei")
         });
-        // ^^^^^ MODIFIED NONCE BUMP TRANSACTION ^^^^^
         await bumpNonceTx.wait(); 
         stats.totalNormalTxSucceeded++;
     } catch (e) {
@@ -309,16 +304,13 @@ async function testStateBasedCallInvalidationScenario(sponsorWallet, availableDe
             maxFeePerGas: ethers.parseUnits("30", "gwei"), maxPriorityFeePerGas: ethers.parseUnits("1", "gwei"),
         });
         const receiptVictim = await txVictim.wait();
-        stats.totalNormalTxSucceeded++; // Transaction was mined
+        stats.totalNormalTxSucceeded++; 
         console.log(`   TxVictim from Actor A confirmed. Status: ${receiptVictim.status === 1n ? 'Success' : 'Failed/Reverted'}.`);
         
-        if (receiptVictim.status !== 1n) { // It reverted
-            // This is the expected path if the conditionalAction's require failed
+        if (receiptVictim.status !== 1n) { 
             console.log(`   👍 TxVictim from Actor A correctly reverted (status 0). This is an expected invalidation due to state change!`);
             stats.stateBasedCallInvalidations_VictimTxRevertedAsExpected++;
         } else {
-            // If it succeeded, it means the conditionalAction's require didn't trigger, or it passed.
-            // This would be an "altered outcome" if the values set are not what would have happened without interference.
             const finalValue = (await contractAtDelegatedEoa.getValue()).toString();
             const finalCriticalValue = (await contractAtDelegatedEoa.criticalValueForTest()).toString();
             console.log(`   TxVictim succeeded. Final main value: ${finalValue}, Final criticalValue: ${finalCriticalValue}`);
@@ -330,9 +322,6 @@ async function testStateBasedCallInvalidationScenario(sponsorWallet, availableDe
             }
         }
     } catch (e) {
-        // This catch block is for if sendTransaction itself throws (e.g., before mining, or if wait() throws for non-revert reasons)
-        // Reverts are typically handled by checking receipt.status above.
-        // However, ethers.js can sometimes throw for reverts if the node returns error data.
         let wasExpectedRevert = false;
         if (e.code === 'CALL_EXCEPTION' || (e.info && typeof e.info === 'object' && e.info.error && e.info.error.message)) {
             const errorMessage = ((e.info && e.info.error && e.info.error.message) ? e.info.error.message : e.message).toLowerCase();
@@ -449,7 +438,7 @@ async function main() {
         const authChainIdForSignature = 0; 
 
         // Deploy Authorizable Contracts
-        const authorizableInstances = []; // Stores ethers.Contract objects
+        const authorizableInstances = []; 
         const authorizableFactory = new ethers.ContractFactory(AUTHORIZABLE_ABI, AUTHORIZABLE_BYTECODE, mainSenderWallet);
         if (NUM_AUTHORIZABLE_CONTRACTS_TO_DEPLOY > 0) {
             console.log(`\n🚀 Deploying ${NUM_AUTHORIZABLE_CONTRACTS_TO_DEPLOY} 'Authorizable' contract(s)...`);
@@ -457,7 +446,7 @@ async function main() {
                 const contract = await authorizableFactory.deploy();
                 await contract.waitForDeployment();
                 const deployedContractAddress = await contract.getAddress();
-                authorizableInstances.push(new ethers.Contract(deployedContractAddress, AUTHORIZABLE_ABI, provider)); // Use provider for reads by default
+                authorizableInstances.push(new ethers.Contract(deployedContractAddress, AUTHORIZABLE_ABI, provider));
                 console.log(`✅ Authorizable contract ${i + 1} deployed at: ${deployedContractAddress}`);
             }
         }
@@ -466,7 +455,7 @@ async function main() {
         if (NUM_FACTORY_CONTRACTS_TO_DEPLOY > 0 && FACTORY_AUTHORIZABLE_BYTECODE !== "YOUR_FACTORY_AUTHORIZABLE_BYTECODE_HERE" && FACTORY_AUTHORIZABLE_ABI.length > 0) {
             console.log(`\n🚀 Deploying ${NUM_FACTORY_CONTRACTS_TO_DEPLOY} 'FactoryAuthorizable' contract(s)...`);
             const factoryFactory = new ethers.ContractFactory(FACTORY_AUTHORIZABLE_ABI, FACTORY_AUTHORIZABLE_BYTECODE, mainSenderWallet);
-            const contract = await factoryFactory.deploy(); // Assuming we deploy just one for the test scenario
+            const contract = await factoryFactory.deploy();
             await contract.waitForDeployment();
             const deployedFactoryAddress = await contract.getAddress();
             factoryContractInstance = new ethers.Contract(deployedFactoryAddress, FACTORY_AUTHORIZABLE_ABI, provider); // Use provider for reads
@@ -517,10 +506,8 @@ async function main() {
                             const { receipt } = await sendEip7702SetCodeTransaction(mainSenderWallet, firstDelegatedAddressInSelection, callData, authorizationList, currentChainId);
                             if (receipt.status === 1) {
                                 stats.totalEip7702SetCodeTxSucceeded++;
-                                // Post-tx checks for successful auths
                                 for(const delegatingWallet of selectedDelegatingWallets) {
                                     const code = await provider.getCode(delegatingWallet.address);
-                                    // This check needs to be more precise, comparing against the targetCodeAddr it was *intended* for in this tx
                                     if (code.startsWith("0xef0100")) stats.totalIndividualAuthsSucceeded_CodeSet++;
                                 }
                             } else {
@@ -529,19 +516,19 @@ async function main() {
                             }
                         } catch (e) { stats.otherTxErrors++; console.error(` Mixed load EIP-7702 tx failed to send/confirm: ${e.message}`);}
                     }
-                } else { // Normal Transaction
+                } else { 
                     stats.totalNormalTxAttempts++;
                     const actorWallets = mainSenderWallet ? [mainSenderWallet, ...delegatingAccountWallets] : [...delegatingAccountWallets];
                     const actor = getRandomElement(actorWallets.filter(w=>w));
                     
                     if (actor) {
                         try {
-                            if (Math.random() < 0.4 && actorWallets.length > 1 && authorizableInstances.length > 0) { // Call an authorizable contract
+                            if (Math.random() < 0.4 && actorWallets.length > 1 && authorizableInstances.length > 0) { 
                                 const targetContract = getRandomElement(authorizableInstances);
                                 const tx = await targetContract.connect(actor).setValue(9000 + round);
                                 await tx.wait();
                                 stats.totalNormalTxSucceeded++;
-                            } else if (actorWallets.length > 1) { // ETH Transfer
+                            } else if (actorWallets.length > 1) { 
                                  let recipient = getRandomElement(actorWallets.filter(w => w && w.address !== actor.address));
                                  if (recipient) {
                                     const tx = await actor.sendTransaction({to: recipient.address, value: ethers.parseUnits("0.00001", "ether")});
@@ -606,11 +593,9 @@ async function main() {
     } catch (error) {
         console.error("\n❌ FATAL Error during simulation setup or main execution:", error.message);
         if (error.stack) console.error(error.stack);
-        stats.otherTxErrors++; // Count this as a major error
-        // Print summary even if there's a fatal error in main execution, if stats were initialized
-        if (simConfigForStats && stats) { // Ensure they exist
+        stats.otherTxErrors++; 
+        if (simConfigForStats && stats) { 
             console.log("\n--- PARTIAL SUMMARY DUE TO ERROR ---");
-             // ... (condensed version of stats printing)
             console.log(`  EIP-7702 Tx Attempts: ${stats.totalEip7702SetCodeTxAttempts}, Normal Tx Attempts: ${stats.totalNormalTxAttempts}, Other Errors: ${stats.otherTxErrors}`);
         }
         process.exit(1);
